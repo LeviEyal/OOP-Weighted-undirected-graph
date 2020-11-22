@@ -22,15 +22,14 @@ The project contains classes represents an  weighted - undirected graph and its 
 
 ## How to use?
 
- Create some Test class in the package ex0 and run the code below (**for example**):
+ Create some Test class in the package ex1 and run the code below (**for example**):
  
 
     public static void main(String[] args) {  
   
-	    graph graph = new Graph_DS();  
+	    weighted_graph graph = new WGraph_DS();  
 	    for (int i = 0; i <= 4; i++) {  
-	        node_data node = new NodeData();  
-	        graph.addNode(node);  
+	        graph.addNode(i);  
 	    }  
 	    graph.connect(4, 1);  
 	    graph.connect(1, 3);  
@@ -39,7 +38,7 @@ The project contains classes represents an  weighted - undirected graph and its 
 	    graph.connect(0, 4);  
 	    graph.connect(0, 1);  
 	    graph.connect(1, 2);  
-	    Graph_Algo ga = new Graph_Algo();  
+	    WGraph_Algo ga = new WGraph_Algo();  
 	    ga.init(graph);  
   
 	    System.out.println(ga.isConnected());  
@@ -53,7 +52,7 @@ The code creates the graph:
 The output of this example program shoud be:
 
     true
-    2
+    4
     [#0 , #1 , #2 ]
 
 ## Algorithms used:
@@ -67,3 +66,5 @@ Connectivity of a graph: [https://en.wikipedia.org/wiki/Connectivity_(graph_theo
 The shortest path problem: [https://en.wikipedia.org/wiki/Shortest_path_problem](https://en.wikipedia.org/wiki/Shortest_path_problem)
 
 The BFS algorithm: [https://en.wikipedia.org/wiki/Breadth-first_search](https://en.wikipedia.org/wiki/Breadth-first_search)
+
+The Dijkstra algorithm: [https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
