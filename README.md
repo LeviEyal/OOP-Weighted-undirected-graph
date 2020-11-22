@@ -48,7 +48,7 @@ The project contains classes represents an  weighted - undirected graph and its 
     }
 The code creates the graph:
 
-![enter image description here](https://media.geeksforgeeks.org/wp-content/uploads/undirectedgraph.png)
+![enter image description here](https://ucarecdn.com/a67cb888-aa0c-424b-8c7f-847e38dd5691/)
 
 The output of this example program shoud be:
 
