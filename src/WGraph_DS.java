@@ -20,10 +20,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
 
     private HashMap<Integer, node_info> v = new HashMap<>();
     private HashMap<Integer, HashMap<node_info, Double>> e = new HashMap<>();
-    private int nodeSize;
-    private int edgeSize;
-    private int mc;
-
+    private int nodeSize, edgeSize, mc;
 
     public WGraph_DS() {
         nodeSize = 0;
@@ -46,9 +43,8 @@ public class WGraph_DS implements weighted_graph, Serializable {
         }
         for (int i : v.keySet()) {
             for (int j : v.keySet()) {
-                double w = other.getEdge(i, j);
-                if (w != -1)
-                    connect(i, j, w);
+                if (hasEdge(i,j))
+                    connect(i, j, other.getEdge(i, j));
             }
         }
         nodeSize = other.nodeSize();
@@ -76,7 +72,10 @@ public class WGraph_DS implements weighted_graph, Serializable {
      */
     @Override
     public boolean hasEdge(int key1, int key2) {
+        node_info n1 = getNode(key1);
         node_info n2 = getNode(key2);
+        if(n1==null || n2==null || key1==key2)
+            return false;
         return e.get(key1).containsKey(n2);
     }
 
@@ -124,9 +123,13 @@ public class WGraph_DS implements weighted_graph, Serializable {
      */
     @Override
     public void connect(int key1, int key2, double w) {
-        if (key1 != key2 && !hasEdge(key1, key2)) {
-            e.get(key1).putIfAbsent(getNode(key2), w);
-            e.get(key2).putIfAbsent(getNode(key1), w);
+        node_info n1 = getNode(key1);
+        node_info n2 = getNode(key2);
+        if(n1==null || n2==null || key1==key2)
+            return;
+        if (!hasEdge(key1, key2)) {
+            e.get(key1).put(n2, w);
+            e.get(key2).put(n1, w);
             edgeSize++;
             mc++;
         }

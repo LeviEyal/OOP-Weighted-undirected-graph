@@ -69,39 +69,23 @@ class GraphTest {
     }
 
     @Test
-    void addNode() {
-    }
-
-    @Test
-    void connect() {
-    }
-
-    @Test
-    void getV() {
-    }
-
-    @Test
-    void testGetV() {
-
-    }
-
-    @Test
-    void removeNode() {
-    }
-
-    @Test
-    void removeEdge() {
-    }
-
-    @Test
     void nodeSize() {
+        int size = g.nodeSize();
+        assertEquals(size, 5);
     }
 
     @Test
     void edgeSize() {
+        int edges = g.edgeSize();
+        assertEquals(edges, 7);
     }
 
     @Test
     void getMC() {
+        assertEquals(12, g.getMC());
+        g.removeEdge(1,3);
+        assertEquals(13, g.getMC());
+        g.removeNode(0);
+        assertEquals(17, g.getMC());
     }
 }

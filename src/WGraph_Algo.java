@@ -11,7 +11,7 @@ import java.util.*;
  * 3. isConnected();
  * 5. int shortestPathDist(int src, int dest);
  * 6. List<Node> shortestPath(int src, int dest);
- * @see ex0.graph_algorithms
+ * @see weighted_graph_algorithms
  *
  * @author Eyal Levi
  * https://github.com/LeviEyal
@@ -19,7 +19,9 @@ import java.util.*;
 public class WGraph_Algo implements weighted_graph_algorithms {
 
     private weighted_graph g;
-
+    private static final int VISITED = 1;
+    private static final int NOT_VISITED = 0;
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
     /**
      * Construct a graph-algorithms object and set its init graph with an empty new graph.
      */
@@ -74,22 +76,22 @@ public class WGraph_Algo implements weighted_graph_algorithms {
     @Override
     public boolean isConnected() {
         if (g.nodeSize() == 0 || g.nodeSize() == 1) return true;
-        setAllTags(0);
+        setAllTags(NOT_VISITED);
         Queue<node_info> q = new LinkedList<>();
         node_info v = g.getV().iterator().next(); //pick some node
-        v.setTag(1);
+        v.setTag(VISITED);
         q.add(v);
         while (!q.isEmpty()) {
             v = q.remove();
             for (node_info n : g.getV(v.getKey())) {
-                if (n.getTag() == 0) {
+                if (n.getTag() == NOT_VISITED) {
                     q.add(n);
-                    n.setTag(1);
+                    n.setTag(VISITED);
                 }
             }
         }
         for (node_info n : g.getV())
-            if (n.getTag() == 0)
+            if (n.getTag() == NOT_VISITED)
                 return false;
         return true;
     }
@@ -102,10 +104,10 @@ public class WGraph_Algo implements weighted_graph_algorithms {
 
     /**
      * This algorithm searching for the shortest path between given source and destination.
-     * The algorithm use BFS method for graph traversal.
+     * The algorithm use Dijkstra method for graph traversal.
      * The algorithm works as followed:
-     * 1) Mark all nodes as not visited by setting their tags to 0
-     * 3) Mark v as visited by set its tag to 1
+     * 1) set all tags to infinity.
+     * 3) set source node tag to 0 and add to the queue
      * 4) add v to a queue
      * 5) while the queue not empty do:
      *      - set v as the outcome of the queue pop
@@ -126,15 +128,31 @@ public class WGraph_Algo implements weighted_graph_algorithms {
         if (source == null || destination == null)
             return -1;
 
-        dijkstra(source);
+        setAllTags(INFINITY);
+
+        Queue<node_info> q = new PriorityQueue<>();
+        source.setTag(0);
+        q.add(source);
+
+        while (!q.isEmpty()) {
+            node_info v = q.poll();
+            for (node_info n : g.getV(v.getKey())) {
+                double w = g.getEdge(v.getKey(), n.getKey()); //weight (v<->n)
+                double weightFromSrc = v.getTag() + w;
+                if (weightFromSrc < n.getTag()) {
+                    q.add(n);
+                    n.setTag(weightFromSrc);
+                }
+            }
+        }
         double t = destination.getTag();
-        return t == Double.POSITIVE_INFINITY ? -1 : t;
+        return (t == INFINITY)? -1 : t;
     }
 
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
-     * The algorithm is as the algorithms above, based on BFS algorithm, but modified
+     * The algorithm is as the algorithms above, based on Dijkstra algorithm, but modified
      * in order to preserve the path and retrieve it as a list of nodes.
      * @param src - source node
      * @param dest - destination node
@@ -154,7 +172,7 @@ public class WGraph_Algo implements weighted_graph_algorithms {
         HashMap<Integer, Integer> map = new LinkedHashMap<>();
         map.put(src, -1);
         //dijkstra:
-        setAllTags(Double.POSITIVE_INFINITY);
+        setAllTags(INFINITY);
 
         Queue<node_info> q = new PriorityQueue<>();
         source.setTag(0);
@@ -177,48 +195,25 @@ public class WGraph_Algo implements weighted_graph_algorithms {
             dest = map.get(dest);
         }
         Collections.reverse(path);
-        System.out.println(path);
         return path;
-    }
-
-    private void dijkstra(node_info start) {
-        setAllTags(Double.POSITIVE_INFINITY);
-
-        Queue<node_info> q = new PriorityQueue<>();
-        start.setTag(0);
-        q.add(start);
-
-        while (!q.isEmpty()) {
-            node_info v = q.poll();
-            for (node_info n : g.getV(v.getKey())) {
-                double w = g.getEdge(v.getKey(), n.getKey()); //weight (v<->n)
-                double weightFromSrc = v.getTag() + w;
-                if (weightFromSrc < n.getTag()) {
-                    q.add(n);
-                    n.setTag(weightFromSrc);
-                }
-            }
-        }
     }
 
     /**
      * Saves this weighted (undirected) graph to the given
      * file name
      *
-     * @param file - the file name (may include a relative path).
+     * @param fileName - the file name (may include a relative path).
      * @return true - iff the file was successfully saved
      */
     @Override
     public boolean save(String fileName) {
         try {
-            FileOutputStream file_out = new FileOutputStream("src\\SavedGraphs\\" + fileName + ".txt");
+            FileOutputStream file_out = new FileOutputStream(fileName);
             ObjectOutputStream out = new ObjectOutputStream(file_out);
             out.writeObject(g);
             out.close();
             file_out.close();
             return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -231,23 +226,19 @@ public class WGraph_Algo implements weighted_graph_algorithms {
      * of this class will be changed (to the loaded one), in case the
      * graph was not loaded the original graph should remain "as is".
      *
-     * @param file - file name
+     * @param fileName - file name
      * @return true - iff the graph was successfully loaded.
      */
     @Override
     public boolean load(String fileName) {
         try {
-            FileInputStream file_in = new FileInputStream("src\\SavedGraphs\\" + fileName + ".txt");
+            FileInputStream file_in = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(file_in);
             g = (weighted_graph) in.readObject();
             file_in.close();
             in.close();
             return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return false;
