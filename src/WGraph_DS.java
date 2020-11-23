@@ -43,7 +43,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
         }
         for (int i : v.keySet()) {
             for (int j : v.keySet()) {
-                if (hasEdge(i,j))
+                if (other.hasEdge(i,j))
                     connect(i, j, other.getEdge(i, j));
             }
         }
